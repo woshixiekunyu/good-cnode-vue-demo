@@ -1,0 +1,24 @@
+html,body,h1,h2,h3,h4,h5,h6,ul,li,p{
+	margin: 0;
+	padding: 0;
+}
+a{text-decoration: none;}
+i{font-style: none;}
+ul,li{list-style: none;}
+html,body{width:100%;background-color: #fff;}
+
+body{
+	font-size: 0.12rem;
+}
+.clearfix::before,
+.clearfix::after{
+	display:block;
+	height:0;
+	clear:both;
+	content: "";
+	/*height: 0;*/
+	/*line-height:0;*/
+	/*display: block;*/
+	/*clear: both;*/
+	/*visibility: hidden;*/
+}
