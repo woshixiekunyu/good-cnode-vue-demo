@@ -19,7 +19,7 @@ Vue.use(VueRouter);
 //引入muse-ui文件
 import MuseUi from 'muse-ui';
 Vue.use(MuseUi)
-import 'muse-ui/dist/muse-ui.css'
+import './publicGood/muse-ui.css'
 
 
 //引入scss文件
@@ -31,6 +31,7 @@ var askList = require('./component/ask-list.vue');
 var goodList = require('./component/good-list.vue');
 var shareList = require('./component/share-list.vue');
 var jobList = require('./component/job-list.vue');
+var detail = require('./component/detail.vue');
 
 var router = new VueRouter({
 	routes:[{
@@ -52,6 +53,9 @@ var router = new VueRouter({
 			path:'jobList',
 			component:jobList
 		}]
+	},{
+		path:'/detail/:id',
+		component:detail
 	},{
 		path:'/',
 		redirect:'/index/mainList'

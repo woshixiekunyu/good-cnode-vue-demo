@@ -1,0 +1,151 @@
+<template>
+	<mu-appbar :title="activeTab" class="headers">
+		<mu-icon-button icon="menu" slot="left"/>
+		<mu-icon-button icon="more_vert" slot="right" @click="Nav()"/>
+	</mu-appbar>
+	<mu-tabs :value="activeTab" @change="handleTabChange" class="nameVal">
+		<mu-tab value="全部" title="全部" v-show="notext"/>
+		<mu-tab value="问答" title="问答" v-show="notext"/>
+		<mu-tab value="精华" title="精华" v-show="notext"/>
+		<mu-tab value="分享" title="分享" v-show="notext"/>
+		<mu-tab value="招聘" title="招聘" v-show="notext"/>
+		
+	</mu-tabs>
+	
+	<router-view></router-view>
+	<mu-card class="content">
+		<mu-card-header :title="authorname" :subTitle="sendTime">
+			<mu-avatar :src="authorimg" slot="avatar" />
+		</mu-card-header>
+		
+		<mu-card-title :title="articleTitle" subTitle="Content Title" class="underLine" />
+		<mu-card-text v-html="articleCon">
+			
+		</mu-card-text>
+		<mu-card-actions style="border-top: 1px solid #ccc;">
+			<mu-flat-button :label="'visit：'+visit" style="border: 1px solid #ccc;margin-left: 1rem;"/>
+			<mu-flat-button :label="'评论共'+pinlun+'条'" style="border: 1px solid #ccc;margin-left: 2rem;" />
+		</mu-card-actions>
+	</mu-card>
+</template>
+<script>
+	export default {
+		data(){
+			return {
+				authorname:'',
+				authorimg:'',
+				sendTime:'',
+				articleTitle:'',
+				topic:'',
+				articleCon:'',
+				visit:'',
+				pinlun:'',
+				activeTab: '',
+				isNav:false,
+				notext:false
+			}
+		},
+		methods:{
+			handleTabChange(val) {
+				this.activeTab = val
+				this.name = val
+				this.isNav = false
+				$('.nameVal').animate({'left':'-100%'},1000,function(){
+					this.notext = false
+				}.bind(this))
+				if(this.activeTab == '全部'){
+					window.location.href="#/index/mainList"
+				}else if(this.activeTab == '问答'){
+					window.location.href="#/index/askList"
+				}else if(this.activeTab == '精华'){
+					window.location.href="#/index/goodList"
+				}else if(this.activeTab == '分享'){
+					window.location.href="#/index/shareList"
+				}else if(this.activeTab == '招聘'){
+					window.location.href="#/index/jobList"
+				}
+			},
+			Nav(){
+				this.isNav = !this.isNav;
+				if(this.isNav){
+//					this.name = '';
+					var self = this;
+					$('.nameVal').animate({'left':'0',},1000,function(){
+						self.notext = true
+					})
+				}else{
+					
+					$('.nameVal').animate({'left':'-100%'},1000,function(){
+						this.notext = false
+					})
+				}
+			}
+		},
+		mounted(){
+			var self = this
+			var params = this.$route.params.id;
+			$.ajax({
+				url:'https://cnodejs.org/api/v1/topic/'+params,
+				type:'GET',
+				success(data){
+					console.log(data)
+					self.authorname = data.data.author.loginname;
+					self.authorimg = data.data.author.avatar_url;
+					self.sendTime = data.data.create_at.slice(0,10);
+					self.articleTitle = data.data.title;
+					self.articleCon = data.data.content
+					self.topic = data.data.tab;
+					self.visit = data.data.visit_count;
+					self.pinlun = data.data.reply_count;
+				}
+			})
+			if(this.topic == 'ask'){
+				this.topic = '问答'
+			}else if(this.topic == 'share'){
+				this.topic = '分享'
+			}else if(this.topic == 'job'){
+				this.topic = '招聘'
+			}else if(this.topic == 'good'){
+				this.topic = '精华'
+			}
+			
+			$('.nameVal').css('width',parseInt($('.mu-appbar-title').css('width'))+parseInt($('.mu-ripple-wrapper')
+			.css('width'))).css('borderBottom','1px solid #fff').appendTo($('.mu-appbar-title'))
+			
+			if(this.$route.path == '/index/mainList'){
+				window.location.href="#/index/mainList";
+				this.activeTab = '全部';
+			}else if(this.$route.path == '/index/askList'){
+				window.location.href="#/index/askList"
+				this.activeTab = '问答';
+			}else if(this.$route.path == '/index/goodList'){
+				window.location.href="#/index/goodList"
+				this.activeTab = '精华';
+			}else if(this.$route.path == '/index/shareList'){
+				window.location.href="#/index/shareList"
+				this.activeTab = '分享';
+			}else if(this.$route.path == '/index/jobList'){
+				window.location.href="#/index/jobList"
+				this.activeTab = '招聘';
+			}
+		}
+	}
+</script>
+<style scoped lang="scss">
+	.headers{
+		position: fixed;
+	}
+	.nameVal{
+		height: 90%;
+		position: absolute;
+		top:50%;
+		left: -100%;
+		margin-top: -24px;
+	}
+	.content{
+		padding-top: 56px;
+	}
+	.underLine{
+		border-bottom: 1px solid #ccc;
+	}
+</style>

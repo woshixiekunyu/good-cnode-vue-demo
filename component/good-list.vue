@@ -1,7 +1,7 @@
 <template>
 	<div class="goodList">
 		<ul>
-			<li v-for="a in Alltopic">
+			<li v-for="(a,idx) in Alltopic">
 				<div class="topicUser">
 					<img :src="a.author.avatar_url" alt="" />
 					<p>{{a.author.loginname}}</p>
@@ -10,10 +10,12 @@
 				<div class="topicContent">
 					<h4>{{a.title}}</h4>
 					<p>{{a.content}}</p>
-					<mu-icon-menu slot="right" icon="more_vert" tooltip="操作" class="operate">
-				        <mu-menu-item title="回复" v-noneTopic/>
-				        <mu-menu-item title="标记" />
-				        <mu-menu-item title="删除" />
+				    </mu-icon-menu>
+					<mu-icon-menu slot="right" icon="more_vert" tooltip="操作" class="operate"">
+				        <mu-menu-item title="标记" v-getCollect @click="toCollect(a.id)"/>
+				        <mu-menu-item title="取消" v-removeCollect/>
+				        <mu-menu-item title="离开"/>
+				        <mu-menu-item :title="''+idx" style="text-indent: -999999px;position: absolute;top:0" />
 				    </mu-icon-menu>
 				    <div class="times_disc">
 				    	<span>时间:<i v-times>{{a.create_at}}</i></span>
@@ -60,6 +62,9 @@
 						self.Alltopic = self.Alltopic.concat(data.data);
 					}
 				})
+			},
+			toCollect(id){
+
 			}
 		},
 		mounted(){
@@ -85,11 +90,25 @@
 			times(el){
 				$(el).html($(el).html().slice(0,10))
 			},
-			noneTopic(el){
+			getCollect(el){
 				$(el).on('click',function(){
-					console.log($(this).parent().parent().parent())
+					var idxNum = $(this).parent().children().eq(3).text().trim();
+
+					$(this).parent().parent().parent().prev().prev()
+					.children('.goodList').children('ul').children('li').eq(idxNum).css('backgroundColor','yellow')
 				})
-			}
+
+			},
+			removeCollect(el){
+				$(el).on('click',function(){
+					var idxNum = $(this).parent().children().eq(3).text().trim();
+
+					$(this).parent().parent().parent().prev().prev()
+					.children('.goodList').children('ul').children('li').eq(idxNum).css('backgroundColor','#fff')
+				})
+
+			},
+			
 		}
 	}
 </script>
