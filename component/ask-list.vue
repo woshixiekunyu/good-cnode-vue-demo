@@ -1,11 +1,11 @@
 <template>
-	<div class="mainList">
+	<div class="askList">
 		<ul>
 			<li v-for="a in Alltopic">
 				<div class="topicUser">
 					<img :src="a.author.avatar_url" alt="" />
 					<p>{{a.author.loginname}}</p>
-					<span>置顶</span>
+					<span>问答</span>
 				</div>
 				<div class="topicContent">
 					<h4>{{a.title}}</h4>
@@ -24,7 +24,7 @@
 				
 			</li>
 		</ul>
-		<span class="loadMore" @click="loadMore()">加载更多</span>
+		<div class="loadMore" @click="loadMore()">加载更多</div>
 		<mu-circular-progress :size="40" class="startLoad" v-show="isstartLoad"/>
 		<mu-circular-progress :size="40" class="footLoad" v-show="isfootLoad"/>
 	</div>
@@ -50,16 +50,16 @@
 					data:{
 						limit : 10,
 						mdrender : false,
+						tab:'ask',
 						page:self.page
 					},
 					success(data){
 						console.log(data)
 						self.isstartLoad = false;
 						self.isfootLoad = false;
-						self.Alltopic = self.Alltopic.concat(data.data);
+//						self.Alltopic = self.Alltopic.concat(data.data);
 					}
 				})
-				
 			}
 		},
 		mounted(){
@@ -69,6 +69,7 @@
 				type:'GET',
 				data:{
 					limit : 10,
+					tab:'ask',
 					mdrender : false
 				},
 				success(data){
@@ -93,7 +94,7 @@
 	}
 </script>
 <style scoped lang="scss">
-	.mainList{
+	.askList{
 			padding: 1rem;
 
 		ul{
@@ -174,7 +175,6 @@
 			line-height: 3rem;
 			text-align: center;
 			border: 1px solid #ccc;
-			display: block;
 		}
 		.loadMore:active{
 			background-color: #7e57c2;

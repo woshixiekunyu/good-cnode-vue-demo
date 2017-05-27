@@ -12,6 +12,7 @@
 			<mu-tab value="招聘" title="招聘" v-show="notext"/>
 			
 		</mu-tabs>
+		
 		<router-view></router-view>
 		
 	</div>
@@ -70,14 +71,29 @@
 //			$('<span/>').html('111').appendTo($('.mu-appbar .mu-appbar-title'))
 //			console.log(parseInt($('.mu-appbar-title').css('width')))
 			$('.nameVal').css('width',parseInt($('.mu-appbar-title').css('width'))+parseInt($('.mu-ripple-wrapper').css('width'))).css('borderBottom','1px solid #fff').appendTo($('.mu-appbar-title'))
-			
+			if(this.$route.path == '/index/mainList'){
+				window.location.href="#/index/mainList";
+				this.activeTab = '全部';
+			}else if(this.$route.path == '/index/askList'){
+				window.location.href="#/index/askList"
+				this.activeTab = '问答';
+			}else if(this.$route.path == '/index/goodList'){
+				window.location.href="#/index/goodList"
+				this.activeTab = '精华';
+			}else if(this.$route.path == '/index/shareList'){
+				window.location.href="#/index/shareList"
+				this.activeTab = '分享';
+			}else if(this.$route.path == '/index/jobList'){
+				window.location.href="#/index/jobList"
+				this.activeTab = '招聘';
+			}
 		},
 
 	}
 </script>
 <style>
 	.headers{
-		position: relative;
+		position: fixed;
 	}
 	.nameVal{
 		height: 90%;

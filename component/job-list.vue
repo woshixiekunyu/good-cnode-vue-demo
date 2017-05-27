@@ -1,15 +1,15 @@
 <template>
-	<div class="mainList">
+	<div class="jobList">
 		<ul>
 			<li v-for="a in Alltopic">
 				<div class="topicUser">
 					<img :src="a.author.avatar_url" alt="" />
 					<p>{{a.author.loginname}}</p>
-					<span>置顶</span>
+					<span>招聘</span>
 				</div>
 				<div class="topicContent">
 					<h4>{{a.title}}</h4>
-					<p>{{a.content}}</p>
+
 					<mu-icon-menu slot="right" icon="more_vert" tooltip="操作" class="operate">
 				        <mu-menu-item title="回复" v-noneTopic/>
 				        <mu-menu-item title="标记" />
@@ -24,7 +24,7 @@
 				
 			</li>
 		</ul>
-		<span class="loadMore" @click="loadMore()">加载更多</span>
+		<div class="loadMore" @click="loadMore()">加载更多</div>
 		<mu-circular-progress :size="40" class="startLoad" v-show="isstartLoad"/>
 		<mu-circular-progress :size="40" class="footLoad" v-show="isfootLoad"/>
 	</div>
@@ -50,6 +50,7 @@
 					data:{
 						limit : 10,
 						mdrender : false,
+						tab:'job',
 						page:self.page
 					},
 					success(data){
@@ -59,7 +60,6 @@
 						self.Alltopic = self.Alltopic.concat(data.data);
 					}
 				})
-				
 			}
 		},
 		mounted(){
@@ -69,6 +69,7 @@
 				type:'GET',
 				data:{
 					limit : 10,
+					tab:'job',
 					mdrender : false
 				},
 				success(data){
@@ -93,7 +94,7 @@
 	}
 </script>
 <style scoped lang="scss">
-	.mainList{
+	.jobList{
 			padding: 1rem;
 
 		ul{
@@ -136,17 +137,10 @@
 					width: 70%;
 					margin-left: 0.5rem;
 					h4{
-						
+						height: 100%;
+						margin-top: 2rem;
 					}
-					p{
-						height: 3rem;
-						line-height: 1.5rem;
-						word-wrap: break-word;
-						padding: 0 1rem;
-						overflow: hidden;
-						text-overflow: ellipsis;
-						margin-bottom: 1rem;
-					}
+					
 					
 					.times_disc{
 						position: absolute;
@@ -174,7 +168,6 @@
 			line-height: 3rem;
 			text-align: center;
 			border: 1px solid #ccc;
-			display: block;
 		}
 		.loadMore:active{
 			background-color: #7e57c2;

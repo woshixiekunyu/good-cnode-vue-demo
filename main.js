@@ -27,6 +27,10 @@ import 'muse-ui/dist/muse-ui.css'
 //引入vue模板
 var indexnav = require('./component/indexnav.vue');
 var mainList = require('./component/main-list.vue');
+var askList = require('./component/ask-list.vue');
+var goodList = require('./component/good-list.vue');
+var shareList = require('./component/share-list.vue');
+var jobList = require('./component/job-list.vue');
 
 var router = new VueRouter({
 	routes:[{
@@ -35,6 +39,18 @@ var router = new VueRouter({
 		children:[{
 			path:'mainList',
 			component:mainList
+		},{
+			path:'askList',
+			component:askList
+		},{
+			path:'goodList',
+			component:goodList
+		},{
+			path:'shareList',
+			component:shareList
+		},{
+			path:'jobList',
+			component:jobList
 		}]
 	},{
 		path:'/',
