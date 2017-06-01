@@ -7,22 +7,22 @@
 					<p>{{a.author.loginname}}</p>
 					<span>招聘</span>
 				</div>
-				<div class="topicContent">
+				<div class="topicContent" @click="toDetail(a.id)">
 					<h4>{{a.title}}</h4>
 
-					<mu-icon-menu slot="right" icon="more_vert" tooltip="操作" class="operate"">
-				        <mu-menu-item title="标记" v-getCollect @click="toCollect(a.id)"/>
-				        <mu-menu-item title="取消" v-removeCollect/>
-				        <mu-menu-item title="离开"/>
-				        <mu-menu-item :title="''+idx" style="text-indent: -999999px;position: absolute;top:0" />
-				    </mu-icon-menu>
+					
 				    <div class="times_disc">
 				    	<span>时间:<i v-times>{{a.create_at}}</i></span>
 				    	<span style="color:red">|</span>
 				    	<span>{{a.reply_count}}/{{a.visit_count}}</span>
 				    </div>
 				</div>
-				
+				<mu-icon-menu slot="right" icon="more_vert" tooltip="操作" class="operate"">
+			        <mu-menu-item title="标记" v-getCollect @click="toCollect(a.id)"/>
+			        <mu-menu-item title="取消" v-removeCollect/>
+			        <mu-menu-item title="离开"/>
+			        <mu-menu-item :title="''+idx" style="text-indent: -999999px;position: absolute;top:0" />
+			    </mu-icon-menu>
 			</li>
 		</ul>
 		<div class="loadMore" @click="loadMore()">加载更多</div>
@@ -64,6 +64,9 @@
 			},
 			toCollect(id){
 
+			},
+			toDetail(id){
+				window.location.href = "#/detail/"+id
 			}
 		},
 		mounted(){

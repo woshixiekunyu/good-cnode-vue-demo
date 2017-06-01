@@ -1,32 +1,32 @@
 <template>
-	<mu-appbar :title="activeTab" class="headers">
-		<mu-icon-button icon="menu" slot="left"/>
-		<mu-icon-button icon="more_vert" slot="right" @click="Nav()"/>
-	</mu-appbar>
-	<mu-tabs :value="activeTab" @change="handleTabChange" class="nameVal">
-		<mu-tab value="全部" title="全部" v-show="notext"/>
-		<mu-tab value="问答" title="问答" v-show="notext"/>
-		<mu-tab value="精华" title="精华" v-show="notext"/>
-		<mu-tab value="分享" title="分享" v-show="notext"/>
-		<mu-tab value="招聘" title="招聘" v-show="notext"/>
-		
-	</mu-tabs>
-	
-	<router-view></router-view>
-	<mu-card class="content">
-		<mu-card-header :title="authorname" :subTitle="sendTime">
-			<mu-avatar :src="authorimg" slot="avatar" />
-		</mu-card-header>
-		
-		<mu-card-title :title="articleTitle" subTitle="Content Title" class="underLine" />
-		<mu-card-text v-html="articleCon">
+	<div>
+		<mu-appbar :title="activeTab" class="headers">
+			<mu-avatar :src="backsrc" slot="left" style="background-color: #7e57c2;" @click="back()"/>
+			<mu-icon-button icon="more_vert" slot="right" @click="Nav()"/>
+		</mu-appbar>
+		<mu-tabs :value="activeTab" @change="handleTabChange" class="nameVal">
+			<mu-tab value="全部" title="全部" v-show="notext"/>
+			<mu-tab value="问答" title="问答" v-show="notext"/>
+			<mu-tab value="精华" title="精华" v-show="notext"/>
+			<mu-tab value="分享" title="分享" v-show="notext"/>
+			<mu-tab value="招聘" title="招聘" v-show="notext"/>
 			
-		</mu-card-text>
-		<mu-card-actions style="border-top: 1px solid #ccc;">
-			<mu-flat-button :label="'visit：'+visit" style="border: 1px solid #ccc;margin-left: 1rem;"/>
-			<mu-flat-button :label="'评论共'+pinlun+'条'" style="border: 1px solid #ccc;margin-left: 2rem;" />
-		</mu-card-actions>
-	</mu-card>
+		</mu-tabs>
+		<mu-card class="content">
+			<mu-card-header :title="authorname" :subTitle="sendTime">
+				<mu-avatar :src="authorimg" slot="avatar" />
+			</mu-card-header>
+			
+			<mu-card-title :title="articleTitle" subTitle="Content Title" class="underLine" />
+			<mu-card-text v-html="articleCon">
+				
+			</mu-card-text>
+			<mu-card-actions style="border-top: 1px solid #ccc;">
+				<mu-flat-button :label="'visit：'+visit"/>
+				<mu-flat-button :label="'评论共'+pinlun+'条'"/>
+			</mu-card-actions>
+		</mu-card>
+	</div>
 </template>
 <script>
 	export default {
@@ -42,7 +42,8 @@
 				pinlun:'',
 				activeTab: '',
 				isNav:false,
-				notext:false
+				notext:false,
+				backsrc:'./image/back.png'
 			}
 		},
 		methods:{
@@ -79,6 +80,9 @@
 						this.notext = false
 					})
 				}
+			},
+			back(){
+				window.history.back()
 			}
 		},
 		mounted(){
@@ -144,6 +148,8 @@
 	}
 	.content{
 		padding-top: 56px;
+		padding-bottom: 5px;
+		border-bottom: 1px solid #ccc;
 	}
 	.underLine{
 		border-bottom: 1px solid #ccc;

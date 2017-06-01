@@ -23,7 +23,7 @@ import './publicGood/muse-ui.css'
 
 
 //引入scss文件
-//require('./dist/mainList.scss')
+require('./dist/detail.scss')
 //引入vue模板
 var indexnav = require('./component/indexnav.vue');
 var mainList = require('./component/main-list.vue');
