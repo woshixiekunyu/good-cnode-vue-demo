@@ -1,17 +1,138 @@
-img{
-    width: 100%;
+.detail{
+    img{
+        width: 100%;
+    }
+    li{
+        margin-left: 1rem;
+        list-style: circle;
+    }
+    h2,h3{
+        line-height: 4rem;
+    }
+    pre{
+        background-color: #ccc;
+    }
+    .mu-flat-button{
+        border: 1px solid #ccc;
+        margin-left: 2rem;
+    }
+    .headers{
+        position: fixed;
+    }
+    .nameVal{
+        height: 90%;
+        position: absolute;
+        top:50%;
+        left: -100%;
+        margin-top: -24px;
+    }
+    .content{
+        padding-top: 56px;
+        padding-bottom: 5px;
+        border-bottom: 1px solid #ccc;
+    }
+    .underLine{
+        border-bottom: 1px solid #ccc;
+    }
+    .sidcArea{
+        margin-bottom: 3rem;
+        word-break: break-word;
+        ul{
+            padding-top: 1rem;
+            li{
+                position: relative;
+                margin-left: 0;
+                display: flex;
+                min-height: 8rem;
+                border-bottom: 1px solid #ccc;
+                padding: 0 1rem 1rem;
+                &:nth-child(1){
+                    border-top: 1px solid #ccc;
+                }
+                .discUser{
+                    flex:2;
+                    text-align: center;
+        
+                    img{
+                        width: 3.5rem;
+                        height: 3.5rem;
+                        border-radius: 50%;
+                        display: block;
+                        margin: 1rem auto 0;
+                    }
+                    i{
+                        display: block;
+                    }
+                    
+                }
+                .discContent{
+                    flex:8;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-content: flex-start;
+                    padding-left: 1rem;
+                   
+                    
+                    div{
+                        font-size: 1.4rem;
+                        line-height: 1.8rem;
+                        align-self: center;
+                       
+                    }
+                    .zanOrdis{
+                        position: absolute;
+                        bottom: 0;
+                        right: 0;
+                        width: 100%;
+                        .icon{
+                            display: block;
+                            margin-right: 2rem;
+                            margin-bottom: 0.3rem;
+                        }
+                        .icon-zan{
+                            width: 20px;
+                            height: 20px;
+                            background: url(../publicGood/image/icon-zan.png) no-repeat;
+                            float: right;
+                        }
+                        .icon-disc{
+                            width: 20px;
+                            height: 20px;
+                            background: url(../publicGood/image/icon-disc.png) no-repeat;
+                            float: right;
+                        }
+                    }
+                }
+            }
+        }
+        
+    }
+    .backInput{
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        display: flex;
+        width: 100%;
+        height: 3rem;
+        input{
+            border: 1px solid #ccc;
+            width: 75%;
+            height: 100%;
+            padding: 0;
+            margin: 0;
+            outline: none;
+        }
+        span{
+            display: block;
+            width: 25%;
+            height: 3rem;
+            border: 1px solid #ccc;
+            background-color: #7E57C2;
+            color:#fff;
+            line-height: 3rem;
+            text-align: center;
+            font-size: 1.6rem;
+        }
+    }    
 }
-li{
-    margin-left: 1rem;
-    list-style: circle;
-}
-h2,h3{
-    line-height: 4rem;
-}
-pre{
-    background-color: #ccc;
-}
-.mu-flat-button{
-    border: 1px solid #ccc;
-    margin-left: 2rem;
-}
+

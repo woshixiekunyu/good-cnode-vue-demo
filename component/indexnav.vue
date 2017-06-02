@@ -42,7 +42,7 @@
 		    		<span @click="toLogin()">登录</span>
 		    	</div>
 		    </mu-list>
-		  </mu-bottom-sheet>
+		</mu-bottom-sheet>
 		<router-view></router-view>
 	</div>
 </template>
