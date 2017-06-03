@@ -29295,6 +29295,7 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
 
 exports.default = {
 	data: function data() {
@@ -29443,6 +29444,22 @@ exports.default = {
 			window.location.href = "#/index/jobList";
 			this.activeTab = '招聘';
 		}
+	},
+
+	directives: {
+		abc: {
+			bind: function bind(el) {
+				$(el).bind('touchstart', function () {
+					console.log(777);
+					$(el).css('backgroundColor', 'red');
+				});
+				$(el).bind('touchend', function () {
+					console.log(777);
+					$(el).css('backgroundColor', '#fff');
+					return;
+				});
+			}
+		}
 	}
 };
 
@@ -29578,6 +29595,8 @@ exports.default = {
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
+//
+//
 //
 //
 //
@@ -30191,7 +30210,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, ".detail img {\n  width: 100%; }\n\n.detail li {\n  margin-left: 1rem;\n  list-style: circle; }\n\n.detail h2, .detail h3 {\n  line-height: 4rem; }\n\n.detail pre {\n  background-color: #ccc; }\n\n.detail .mu-flat-button {\n  border: 1px solid #ccc;\n  margin-left: 2rem; }\n\n.detail .headers {\n  position: fixed; }\n\n.detail .nameVal {\n  height: 90%;\n  position: absolute;\n  top: 50%;\n  left: -100%;\n  margin-top: -24px; }\n\n.detail .content {\n  padding-top: 56px;\n  padding-bottom: 5px;\n  border-bottom: 1px solid #ccc; }\n\n.detail .underLine {\n  border-bottom: 1px solid #ccc; }\n\n.detail .sidcArea {\n  margin-bottom: 3rem;\n  word-break: break-word; }\n  .detail .sidcArea ul {\n    padding-top: 1rem; }\n    .detail .sidcArea ul li {\n      position: relative;\n      margin-left: 0;\n      display: flex;\n      min-height: 8rem;\n      border-bottom: 1px solid #ccc;\n      padding: 0 1rem 1rem; }\n      .detail .sidcArea ul li:nth-child(1) {\n        border-top: 1px solid #ccc; }\n      .detail .sidcArea ul li .discUser {\n        flex: 2;\n        text-align: center; }\n        .detail .sidcArea ul li .discUser img {\n          width: 3.5rem;\n          height: 3.5rem;\n          border-radius: 50%;\n          display: block;\n          margin: 1rem auto 0; }\n        .detail .sidcArea ul li .discUser i {\n          display: block; }\n      .detail .sidcArea ul li .discContent {\n        flex: 8;\n        display: flex;\n        flex-wrap: wrap;\n        align-content: flex-start;\n        padding-left: 1rem; }\n        .detail .sidcArea ul li .discContent div {\n          font-size: 1.4rem;\n          line-height: 1.8rem;\n          align-self: center; }\n        .detail .sidcArea ul li .discContent .zanOrdis {\n          position: absolute;\n          bottom: 0;\n          right: 0;\n          width: 100%; }\n          .detail .sidcArea ul li .discContent .zanOrdis .icon {\n            display: block;\n            margin-right: 2rem;\n            margin-bottom: 0.3rem; }\n          .detail .sidcArea ul li .discContent .zanOrdis .icon-zan {\n            width: 20px;\n            height: 20px;\n            background: url(" + __webpack_require__(40) + ") no-repeat;\n            float: right; }\n          .detail .sidcArea ul li .discContent .zanOrdis .icon-disc {\n            width: 20px;\n            height: 20px;\n            background: url(" + __webpack_require__(39) + ") no-repeat;\n            float: right; }\n\n.detail .backInput {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  display: flex;\n  width: 100%;\n  height: 3rem; }\n  .detail .backInput input {\n    border: 1px solid #ccc;\n    width: 75%;\n    height: 100%;\n    padding: 0;\n    margin: 0;\n    outline: none; }\n  .detail .backInput span {\n    display: block;\n    width: 25%;\n    height: 3rem;\n    border: 1px solid #ccc;\n    background-color: #7E57C2;\n    color: #fff;\n    line-height: 3rem;\n    text-align: center;\n    font-size: 1.6rem; }\n", ""]);
+exports.push([module.i, ".detail img {\n  width: 100%; }\n\n.detail li {\n  margin-left: 1rem;\n  list-style: circle; }\n\n.detail h2, .detail h3 {\n  line-height: 4rem; }\n\n.detail pre {\n  background-color: #ccc; }\n\n.detail .mu-flat-button {\n  border: 1px solid #ccc;\n  margin-left: 2rem; }\n\n.detail .headers {\n  position: fixed; }\n\n.detail .nameVal {\n  height: 90%;\n  position: absolute;\n  top: 50%;\n  left: -100%;\n  margin-top: -24px; }\n\n.detail .content {\n  padding-top: 56px;\n  padding-bottom: 5px;\n  border-bottom: 1px solid #ccc; }\n\n.detail .underLine {\n  border-bottom: 1px solid #ccc; }\n\n.detail .sidcArea {\n  margin-bottom: 3rem;\n  word-break: break-word; }\n  .detail .sidcArea ul {\n    padding-top: 1rem; }\n    .detail .sidcArea ul li {\n      position: relative;\n      margin-left: 0;\n      display: flex;\n      min-height: 8rem;\n      border-bottom: 1px solid #ccc;\n      padding: 1rem   1rem 2rem; }\n      .detail .sidcArea ul li:nth-child(1) {\n        border-top: 1px solid #ccc; }\n      .detail .sidcArea ul li .discUser {\n        flex: 2;\n        text-align: center; }\n        .detail .sidcArea ul li .discUser img {\n          width: 3.5rem;\n          height: 3.5rem;\n          border-radius: 50%;\n          display: block;\n          margin: 1rem auto 0; }\n        .detail .sidcArea ul li .discUser i {\n          display: block; }\n      .detail .sidcArea ul li .discContent {\n        flex: 8;\n        display: flex;\n        flex-wrap: wrap;\n        align-content: flex-start;\n        padding-left: 1rem; }\n        .detail .sidcArea ul li .discContent div {\n          font-size: 1.4rem;\n          line-height: 1.8rem;\n          align-self: center; }\n        .detail .sidcArea ul li .discContent .zanOrdis {\n          position: absolute;\n          bottom: 0;\n          right: 0;\n          width: 100%; }\n          .detail .sidcArea ul li .discContent .zanOrdis .icon {\n            display: block;\n            margin-right: 2rem;\n            margin-bottom: 0.3rem; }\n          .detail .sidcArea ul li .discContent .zanOrdis .icon-zan {\n            width: 20px;\n            height: 20px;\n            background: url(" + __webpack_require__(40) + ") no-repeat;\n            float: right; }\n          .detail .sidcArea ul li .discContent .zanOrdis .icon-disc {\n            width: 20px;\n            height: 20px;\n            background: url(" + __webpack_require__(39) + ") no-repeat;\n            float: right; }\n\n.detail .backInput {\n  position: fixed;\n  bottom: 0;\n  left: 0;\n  display: flex;\n  width: 100%;\n  height: 3rem; }\n  .detail .backInput input {\n    border: 1px solid #ccc;\n    width: 75%;\n    height: 100%;\n    padding: 0;\n    margin: 0;\n    outline: none; }\n  .detail .backInput span {\n    display: block;\n    width: 25%;\n    height: 3rem;\n    border: 1px solid #ccc;\n    background-color: #7E57C2;\n    color: #fff;\n    line-height: 3rem;\n    text-align: center;\n    font-size: 1.6rem; }\n", ""]);
 
 // exports
 
@@ -30526,6 +30545,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "subTitle": _vm.sendTime
     }
   }, [_c('mu-avatar', {
+    directives: [{
+      name: "abc",
+      rawName: "v-abc"
+    }],
     attrs: {
       "src": _vm.authorimg
     },
@@ -30999,11 +31022,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "close": _vm.closeBottomSheet
     }
-  }, [_c('mu-list', {
-    on: {
-      "itemClick": _vm.closeBottomSheet
-    }
-  }, [_c('mu-sub-header', [_vm._v("请登录")]), _vm._v(" "), _c('div', {
+  }, [_c('mu-list', [_c('mu-sub-header', [_vm._v("请登录")]), _vm._v(" "), _c('div', {
     staticClass: "inputUserName"
   }, [_c('input', {
     directives: [{
@@ -31037,7 +31056,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
         _vm.toLogin()
       }
     }
-  }, [_vm._v("登录")])])], 1)], 1), _vm._v(" "), _c('router-view')], 1)
+  }, [_vm._v("登录")])])], 1)], 1), _vm._v(" "), _c('div', {
+    staticClass: "setTopic"
+  }), _vm._v(" "), _c('router-view')], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {

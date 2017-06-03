@@ -14,7 +14,7 @@
 		</mu-tabs>
 		<mu-card class="content">
 			<mu-card-header :title="authorname" :subTitle="sendTime">
-				<mu-avatar :src="authorimg" slot="avatar"/>
+				<mu-avatar :src="authorimg" slot="avatar" v-abc/>
 			</mu-card-header>
 
 			<mu-card-title :title="articleTitle" subTitle="Content Title" class="underLine" />
@@ -49,6 +49,7 @@
 			<input type="text" v-model="backInputVal"/>
 			<span @click="sendBackInput()">评论</span>
 		</div>
+		
 	</div>
 </template>
 <script>
@@ -198,6 +199,21 @@
 			} else if(this.$route.path == '/index/jobList') {
 				window.location.href = "#/index/jobList"
 				this.activeTab = '招聘';
+			}
+		},
+		directives:{
+			abc:{
+				bind(el){
+					$(el).bind('touchstart',function(){
+						console.log(777)
+						$(el).css('backgroundColor','red')
+					})
+					$(el).bind('touchend',function(){
+						console.log(777)
+						$(el).css('backgroundColor','#fff')
+						return;
+					})
+				}
 			}
 		}
 	}

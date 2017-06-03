@@ -34,7 +34,8 @@
 			</mu-list>
 		</mu-drawer>
 		<mu-bottom-sheet :open="bottomSheet" @close="closeBottomSheet">
-		    <mu-list @itemClick="closeBottomSheet">
+		    <mu-list>
+		    	<!-- @itemClick="closeBottomSheet"-->
 		    	<mu-sub-header>请登录</mu-sub-header>
 		    	<div class="inputUserName">
 		    		<input type="text" v-model="userVal"/>
@@ -43,6 +44,7 @@
 		    	</div>
 		    </mu-list>
 		</mu-bottom-sheet>
+		<div class="setTopic"></div>
 		<router-view></router-view>
 	</div>
 </template>
