@@ -68,7 +68,8 @@ var router = new VueRouter({
 var store = new Vuex.Store({
 	state:{
 		discId:'',
-		zanLength:''
+		zanLength:'',
+		IsNoImg:''
 	},
 	mutations:{
 		getDiscId(state,a){
@@ -76,11 +77,20 @@ var store = new Vuex.Store({
 		},
 		getZanLength(state,a){
 			state.zanLength = a
+		},
+		getIsNoImg(state,a){
+			state.IsNoImg = a
 		}
 	},
 	getters:{
 		discId(state){
 			return state.getDiscId;
+		},
+		zanLength(state){
+			return state.getZanLength;
+		},
+		IsNoImg(state){
+			return state.getIsNoImg;
 		}
 	}
 })

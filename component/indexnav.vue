@@ -19,6 +19,13 @@
 				<div class="container">
 					<mu-raised-button @click="openBottomSheet" :label="isLogin" class="demo-raised-button" primary/>
 					<br/>
+					<!--省流量-->
+					<div class="slideTips">
+						<div class="sildeArea" @click="slide()">
+							<span></span>
+						</div>
+						<i>省流量模式</i>
+					</div>
 					<mu-raised-button label="cNode 社区" fullWidth class="tips"/>
 				</div>
 				<div class="userInfor">
@@ -45,8 +52,8 @@
 		    </mu-list>
 		</mu-bottom-sheet>
 		<div class="setTopic">
-			<mu-auto-complete class="Topicinput" hintText="请输入标题" @input="handleInput" :dataSource="dataSource" @change="handlechange" />
-  			<mu-auto-complete class="Topicinput" hintText="请输入内容" fullWidth @input="handleInput" :dataSource="dataSource"/>
+			<input type="text" placeholder="请输入标题" v-model="topicTitleVal"/>
+			<textarea name="topicContent" v-model="topicContentVal" placeholder="请输入主题内容"></textarea>
   			<select name="topicType" id="topicType" v-model="topicType">
   				<option value="全部">全部</option>
   				<option value="问答">问答</option>
@@ -54,8 +61,8 @@
   				<option value="精华">精华</option>
   				<option value="招聘">招聘</option>
   			</select>
-  			<span>发表主题</span>
-  			<span>取消</span>
+  			<span @click="sendTopic()" v-shanshuo>发表主题</span>
+  			<span @click="notSendTopic()" v-shanshuo>取消</span>
 		</div>
 		<router-view></router-view>
 	</div>
@@ -77,31 +84,122 @@
   				loginTips:false,
   				cookie:'',
 				isBuildTopic:false,
-				dataSource: [],
-				topicType:'全部'
+				topicType:'全部',
+				topicTitleVal:'',
+				topicContentVal:'',
+				isNoImg:false,
 			}
 		},
 		methods: {
+			//省流量
+			slide(){
+				this.isNoImg = !this.isNoImg;
+				var cookie = document.cookie.split('; ');
+				var isHasImg;
+				cookie.forEach(function(item){
+					var arr = item.split('=');
+					if(arr[0] == 'isNoImg'){
+						isHasImg = arr[1] 
+					}
+				})
+				if(isHasImg){
+					
+					if(isHasImg == 'true'){
+						$('.sildeArea span').css('left',0).parent().css('backgroundColor','')
+						this.$store.commit('getIsNoImg',false);
+						//将无图通知存进cookie
+						var now = new Date();
+						now.setDate(now.getDate()+365)
+						document.cookie = "isNoImg="+false+";expires="+now;
+						
+					}else{
+						$('.sildeArea span').css('left',parseInt($('.sildeArea').css('width'))-parseInt($('.sildeArea span')
+						.css('width'))).parent().css('backgroundColor','#00f000')
+						this.$store.commit('getIsNoImg',true);
+						//将无图通知存进cookie
+						var now = new Date();
+						now.setDate(now.getDate()+365)
+						document.cookie = "isNoImg="+true+";expires="+now;
+					}
+					
+				}else{
+					$('.sildeArea span').css('left',parseInt($('.sildeArea').css('width'))-parseInt($('.sildeArea span')
+					.css('width'))).parent().css('backgroundColor','#00f000')
+					this.$store.commit('getIsNoImg',this.isNoImg);
+					//将无图通知存进cookie
+					var now = new Date();
+					now.setDate(now.getDate()+365)
+					document.cookie = "isNoImg="+this.isNoImg+";expires="+now;
+				}
+				
+					
+			},
 			//打开收藏页
 			toCollect(){
-				window.location.href="#/collect/";
+				var cookie = document.cookie.split('; ');
+			
+				cookie.forEach(function(item){
+					var arr = item.split('=');
+					if(arr[0] == 'isUser'){
+						self.cookie = arr[1] 
+					}
+				})	
+				if(self.cookie){
+					window.location.href="#/collect/";
+				}else{
+					alert('请先登录')
+				}
+				
 				
 			},
-			//新建主题页
-			handlechange (val) {
-		    	console.log(`you choose ${val}`)
-		    },
-			handleInput(val) {
-				this.dataSource = [
-					val,
-					val + val,
-					val + val + val
-				]
+			//发送主题
+			sendTopic(){
+				var self = this;
+				var cookie = document.cookie.split('; ');
+			
+				cookie.forEach(function(item){
+					var arr = item.split('=');
+					if(arr[0] == 'isUser'){
+						self.cookie = arr[1] 
+					}
+				})	
+				$.ajax({
+					url:'https://cnodejs.org/api/v1/topics',
+					type:'POST',
+					data:{
+						accesstoken : self.cookie,
+						title : self.topicTitleVal,
+						content : self.topicContentVal,
+						tab : self.topicType
+					},
+					success(data){
+						console.log(data)
+						self.topicTitleVal = '';
+						self.topicContentVal = '';
+					}
+				})
+			},
+			//取消发送
+			notSendTopic(){
+				$('.setTopic').animate({"top":'-100%'},200)
 			},
 			//新建主题
 			toBuildTopic(){
-				this.isBuildTopic = true;
-				$('.setTopic').animate({"top":0},1000)
+				var cookie = document.cookie.split('; ');
+			
+				cookie.forEach(function(item){
+					var arr = item.split('=');
+					if(arr[0] == 'isUser'){
+						self.cookie = arr[1] 
+					}
+				})	
+				if(self.cookie){
+					this.isBuildTopic = true;
+					$('.setTopic').animate({"top":0},1000)
+				}else{
+					alert('请先登录')
+				}
+				
 			},
 			//登录
 			toLogin(){
@@ -212,11 +310,14 @@
 			
 			//页面一开始判断是否有cookie
 			var cookie = document.cookie.split('; ');
-			
+			//省流量key
+			var isHasImg;
 			cookie.forEach(function(item){
 				var arr = item.split('=');
 				if(arr[0] == 'isUser'){
 					self.cookie = arr[1] 
+				}else if(arr[0] == 'isNoImg'){
+					isHasImg = arr[1];
 				}
 			})	
 			console.log(self.cookie)
@@ -236,7 +337,31 @@
 					}
 				})
 			}
+			//页面刷新判断是否为省流量模式
+			if(isHasImg == 'true'){
+				$('.sildeArea span').css('left',parseInt($('.sildeArea').css('width'))-parseInt($('.sildeArea span')
+				.css('width'))).parent().css('backgroundColor','#00f000')
+				//提交到vuex
+				this.$store.commit('getIsNoImg',true);
+			}else if(isHasImg == 'false'){
+				$('.sildeArea span').css('left',0).parent().css('backgroundColor','')
+				this.$store.commit('getIsNoImg',false);
+			}
 		},
+		directives:{
+			shanshuo:{
+				bind(el){
+					$(el).bind('touchstart',function(){
+						$(el).css('backgroundColor','yellow')
+					})
+					$(el).bind('touchend',function(){
+						setTimeout(function(){
+							$(el).css('backgroundColor','')
+						},50)
+					})
+				}
+			}
+		}
 	}
 </script>
 <style scoped lang="scss">
@@ -250,12 +375,23 @@
 		background-color: rgba(0,0,0,0.7);
 
 		padding: 10rem 1rem 0;
-		.Topicinput{
-			width:100%;
+		input{
+			width: 80%;
+			height: 3rem;
+			padding: 0;
+			border: 2px solid #7E57C2;
 			border-radius: 1rem;
-			border: 3px solid #7E57C2;
-			background-color: #fff;
-			margin-top: 1rem;
+			outline: none;
+		}
+		textarea{
+			min-width: 100%;
+			max-width: 100%;
+			min-height: 10rem;
+			max-height: 10rem;
+			border-right: 1rem;
+			border: 2px solid #7E57C2;
+			margin-top: 0.5rem;
+			outline: none;
 		}
 		#topicType{
 			margin-top: 1rem;
@@ -276,6 +412,35 @@
 			margin-top: 0.5rem;
 		}
 	}
+	.slideTips{
+		position: fixed;
+		top: 1rem;
+		right: 1rem;
+		.sildeArea{
+			margin: 0 auto;
+			width: 3rem;
+			height: 1.2rem;
+			border: 1px solid #ccc;
+			border-radius: 0.5rem;
+			position: relative;
+			span{
+				display: block;
+				background: #00f000;
+				height: 1.1rem;
+				border-radius: 50%;
+				border: 1px solid #0000FF;
+				width: 1.1rem;
+				position: absolute;
+				left: 0;
+				top: 0;
+			}
+		}
+		i{
+			
+			font-size: 1.2rem;
+		}
+	}
+	
 	.inputUserName{
 		position: relative;
 		padding-top: 2rem;

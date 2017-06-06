@@ -29057,7 +29057,8 @@ var router = new _vueRouter2.default({
 var store = new _vuex2.default.Store({
 	state: {
 		discId: '',
-		zanLength: ''
+		zanLength: '',
+		IsNoImg: ''
 	},
 	mutations: {
 		getDiscId: function getDiscId(state, a) {
@@ -29065,11 +29066,20 @@ var store = new _vuex2.default.Store({
 		},
 		getZanLength: function getZanLength(state, a) {
 			state.zanLength = a;
+		},
+		getIsNoImg: function getIsNoImg(state, a) {
+			state.IsNoImg = a;
 		}
 	},
 	getters: {
 		discId: function discId(state) {
 			return state.getDiscId;
+		},
+		zanLength: function zanLength(state) {
+			return state.getZanLength;
+		},
+		IsNoImg: function IsNoImg(state) {
+			return state.getIsNoImg;
 		}
 	}
 });
@@ -29230,9 +29240,15 @@ exports.default = {
 			isfootLoad: false,
 			page: 1,
 			isCollect: false
+
 		};
 	},
 
+	computed: {
+		isHasImg: function isHasImg() {
+			return this.$store.state.IsNoImg;
+		}
+	},
 	methods: {
 		loadMore: function loadMore() {
 			var self = this;
@@ -29598,6 +29614,9 @@ exports.default = {
 		},
 		discId: function discId() {
 			return this.$store.state.discId;
+		},
+		isHasImg: function isHasImg() {
+			return this.$store.state.IsNoImg;
 		}
 	},
 	methods: {
@@ -29877,7 +29896,17 @@ exports.default = {
 				}
 			});
 		} else {
-			alert('请先登录');
+			$.ajax({
+				url: 'https://cnodejs.org/api/v1/accesstoken',
+				type: 'POST',
+				data: {
+					accesstoken: self.cookie
+				},
+				success: function success(data) {
+					//						console.log(data);
+					self.userName = data.loginname;
+				}
+			});
 		}
 	},
 
@@ -29953,6 +29982,11 @@ exports.default = {
 		};
 	},
 
+	computed: {
+		isHasImg: function isHasImg() {
+			return this.$store.state.IsNoImg;
+		}
+	},
 	methods: {
 		loadMore: function loadMore() {
 			var self = this;
@@ -30092,6 +30126,13 @@ Object.defineProperty(exports, "__esModule", {
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
 
 exports.default = {
 	data: function data() {
@@ -30109,29 +30150,118 @@ exports.default = {
 			loginTips: false,
 			cookie: '',
 			isBuildTopic: false,
-			dataSource: [],
-			topicType: '全部'
+			topicType: '全部',
+			topicTitleVal: '',
+			topicContentVal: '',
+			isNoImg: false
 		};
 	},
 
 	methods: {
-		//打开收藏页
-		toCollect: function toCollect() {
-			window.location.href = "#/collect/";
+		//省流量
+		slide: function slide() {
+			this.isNoImg = !this.isNoImg;
+			var cookie = document.cookie.split('; ');
+			var isHasImg;
+			cookie.forEach(function (item) {
+				var arr = item.split('=');
+				if (arr[0] == 'isNoImg') {
+					isHasImg = arr[1];
+				}
+			});
+			if (isHasImg) {
+
+				if (isHasImg == 'true') {
+					$('.sildeArea span').css('left', 0).parent().css('backgroundColor', '');
+					this.$store.commit('getIsNoImg', false);
+					//将无图通知存进cookie
+					var now = new Date();
+					now.setDate(now.getDate() + 365);
+					document.cookie = "isNoImg=" + false + ";expires=" + now;
+				} else {
+					$('.sildeArea span').css('left', parseInt($('.sildeArea').css('width')) - parseInt($('.sildeArea span').css('width'))).parent().css('backgroundColor', '#00f000');
+					this.$store.commit('getIsNoImg', true);
+					//将无图通知存进cookie
+					var now = new Date();
+					now.setDate(now.getDate() + 365);
+					document.cookie = "isNoImg=" + true + ";expires=" + now;
+				}
+			} else {
+				$('.sildeArea span').css('left', parseInt($('.sildeArea').css('width')) - parseInt($('.sildeArea span').css('width'))).parent().css('backgroundColor', '#00f000');
+				this.$store.commit('getIsNoImg', this.isNoImg);
+				//将无图通知存进cookie
+				var now = new Date();
+				now.setDate(now.getDate() + 365);
+				document.cookie = "isNoImg=" + this.isNoImg + ";expires=" + now;
+			}
 		},
 
-		//新建主题页
-		handlechange: function handlechange(val) {
-			console.log('you choose ' + val);
+		//打开收藏页
+		toCollect: function toCollect() {
+			var cookie = document.cookie.split('; ');
+
+			cookie.forEach(function (item) {
+				var arr = item.split('=');
+				if (arr[0] == 'isUser') {
+					self.cookie = arr[1];
+				}
+			});
+			if (self.cookie) {
+				window.location.href = "#/collect/";
+			} else {
+				alert('请先登录');
+			}
 		},
-		handleInput: function handleInput(val) {
-			this.dataSource = [val, val + val, val + val + val];
+
+		//发送主题
+		sendTopic: function sendTopic() {
+			var self = this;
+			var cookie = document.cookie.split('; ');
+
+			cookie.forEach(function (item) {
+				var arr = item.split('=');
+				if (arr[0] == 'isUser') {
+					self.cookie = arr[1];
+				}
+			});
+			$.ajax({
+				url: 'https://cnodejs.org/api/v1/topics',
+				type: 'POST',
+				data: {
+					accesstoken: self.cookie,
+					title: self.topicTitleVal,
+					content: self.topicContentVal,
+					tab: self.topicType
+				},
+				success: function success(data) {
+					console.log(data);
+					self.topicTitleVal = '';
+					self.topicContentVal = '';
+				}
+			});
+		},
+
+		//取消发送
+		notSendTopic: function notSendTopic() {
+			$('.setTopic').animate({ "top": '-100%' }, 200);
 		},
 
 		//新建主题
 		toBuildTopic: function toBuildTopic() {
-			this.isBuildTopic = true;
-			$('.setTopic').animate({ "top": 0 }, 1000);
+			var cookie = document.cookie.split('; ');
+
+			cookie.forEach(function (item) {
+				var arr = item.split('=');
+				if (arr[0] == 'isUser') {
+					self.cookie = arr[1];
+				}
+			});
+			if (self.cookie) {
+				this.isBuildTopic = true;
+				$('.setTopic').animate({ "top": 0 }, 1000);
+			} else {
+				alert('请先登录');
+			}
 		},
 
 		//登录
@@ -30243,11 +30373,14 @@ exports.default = {
 
 		//页面一开始判断是否有cookie
 		var cookie = document.cookie.split('; ');
-
+		//省流量key
+		var isHasImg;
 		cookie.forEach(function (item) {
 			var arr = item.split('=');
 			if (arr[0] == 'isUser') {
 				self.cookie = arr[1];
+			} else if (arr[0] == 'isNoImg') {
+				isHasImg = arr[1];
 			}
 		});
 		console.log(self.cookie);
@@ -30266,6 +30399,30 @@ exports.default = {
 					self.isLogin = '退出登录';
 				}
 			});
+		}
+		//页面刷新判断是否为省流量模式
+		if (isHasImg == 'true') {
+			$('.sildeArea span').css('left', parseInt($('.sildeArea').css('width')) - parseInt($('.sildeArea span').css('width'))).parent().css('backgroundColor', '#00f000');
+			//提交到vuex
+			this.$store.commit('getIsNoImg', true);
+		} else if (isHasImg == 'false') {
+			$('.sildeArea span').css('left', 0).parent().css('backgroundColor', '');
+			this.$store.commit('getIsNoImg', false);
+		}
+	},
+
+	directives: {
+		shanshuo: {
+			bind: function bind(el) {
+				$(el).bind('touchstart', function () {
+					$(el).css('backgroundColor', 'yellow');
+				});
+				$(el).bind('touchend', function () {
+					setTimeout(function () {
+						$(el).css('backgroundColor', '');
+					}, 50);
+				});
+			}
 		}
 	}
 };
@@ -30324,6 +30481,11 @@ exports.default = {
 		};
 	},
 
+	computed: {
+		isHasImg: function isHasImg() {
+			return this.$store.state.IsNoImg;
+		}
+	},
 	methods: {
 		loadMore: function loadMore() {
 			var self = this;
@@ -30445,6 +30607,11 @@ exports.default = {
 		};
 	},
 
+	computed: {
+		isHasImg: function isHasImg() {
+			return this.$store.state.IsNoImg;
+		}
+	},
 	methods: {
 		loadMore: function loadMore() {
 			var self = this;
@@ -30564,6 +30731,11 @@ exports.default = {
 		};
 	},
 
+	computed: {
+		isHasImg: function isHasImg() {
+			return this.$store.state.IsNoImg;
+		}
+	},
 	methods: {
 		loadMore: function loadMore() {
 			var self = this;
@@ -30750,7 +30922,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, "\n.setTopic[data-v-5202ed5e] {\n  z-index: 100000;\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  top: -100%;\n  left: 0;\n  background-color: rgba(0, 0, 0, 0.7);\n  padding: 10rem 1rem 0;\n}\n.setTopic .Topicinput[data-v-5202ed5e] {\n    width: 100%;\n    border-radius: 1rem;\n    border: 3px solid #7E57C2;\n    background-color: #fff;\n    margin-top: 1rem;\n}\n.setTopic #topicType[data-v-5202ed5e] {\n    margin-top: 1rem;\n    width: 100%;\n    height: 3rem;\n}\n.setTopic > span[data-v-5202ed5e] {\n    display: block;\n    width: 100%;\n    height: 4rem;\n    border: 2px solid #7E57C2;\n    background-color: skyblue;\n    border-radius: 1rem;\n    line-height: 4rem;\n    text-align: center;\n    font-size: 1.6rem;\n    margin-top: 0.5rem;\n}\n.inputUserName[data-v-5202ed5e] {\n  position: relative;\n  padding-top: 2rem;\n}\n.inputUserName input[data-v-5202ed5e] {\n    display: block;\n    width: 70%;\n    margin: 0 auto;\n    height: 4rem;\n    border-radius: 1rem;\n    border: 1px solid #ccc;\n    outline: none;\n    box-shadow: 0 0 0.5rem #7E57C2;\n}\n.inputUserName span[data-v-5202ed5e] {\n    display: block;\n    width: 10rem;\n    height: 4rem;\n    border-radius: 1rem;\n    text-align: center;\n    line-height: 4rem;\n    font-size: 2rem;\n    border: 1px solid #ccc;\n    background-color: #7E57C2;\n    color: #fff;\n    margin: 0 auto;\n    margin-top: 1rem;\n}\n.inputUserName i[data-v-5202ed5e] {\n    position: absolute;\n    left: 50%;\n    top: 0;\n    color: red;\n}\n.tips[data-v-5202ed5e] {\n  margin-top: 1rem;\n}\n.headers[data-v-5202ed5e] {\n  position: fixed;\n}\n.nameVal[data-v-5202ed5e] {\n  height: 90%;\n  position: absolute;\n  top: 50%;\n  left: -100%;\n  margin-top: -24px;\n}\n.userInfor[data-v-5202ed5e] {\n  width: 100%;\n  text-align: center;\n  height: 16rem;\n  padding-top: 4rem;\n}\n.userInfor img[data-v-5202ed5e] {\n    width: 4rem;\n    height: 4rem;\n    margin: 0 auto;\n    display: block;\n    border-radius: 50%;\n}\n.list[data-v-5202ed5e] {\n  padding-left: 1rem;\n}\n.list .lists[data-v-5202ed5e] {\n    border: 1px solid #ccc;\n    margin-top: 1rem;\n    background-color: yellow;\n}\n", ""]);
+exports.push([module.i, "\n.setTopic[data-v-5202ed5e] {\n  z-index: 100000;\n  width: 100%;\n  height: 100%;\n  position: fixed;\n  top: -100%;\n  left: 0;\n  background-color: rgba(0, 0, 0, 0.7);\n  padding: 10rem 1rem 0;\n}\n.setTopic input[data-v-5202ed5e] {\n    width: 80%;\n    height: 3rem;\n    padding: 0;\n    border: 2px solid #7E57C2;\n    border-radius: 1rem;\n    outline: none;\n}\n.setTopic textarea[data-v-5202ed5e] {\n    min-width: 100%;\n    max-width: 100%;\n    min-height: 10rem;\n    max-height: 10rem;\n    border-right: 1rem;\n    border: 2px solid #7E57C2;\n    margin-top: 0.5rem;\n    outline: none;\n}\n.setTopic #topicType[data-v-5202ed5e] {\n    margin-top: 1rem;\n    width: 100%;\n    height: 3rem;\n}\n.setTopic > span[data-v-5202ed5e] {\n    display: block;\n    width: 100%;\n    height: 4rem;\n    border: 2px solid #7E57C2;\n    background-color: skyblue;\n    border-radius: 1rem;\n    line-height: 4rem;\n    text-align: center;\n    font-size: 1.6rem;\n    margin-top: 0.5rem;\n}\n.slideTips[data-v-5202ed5e] {\n  position: fixed;\n  top: 1rem;\n  right: 1rem;\n}\n.slideTips .sildeArea[data-v-5202ed5e] {\n    margin: 0 auto;\n    width: 3rem;\n    height: 1.2rem;\n    border: 1px solid #ccc;\n    border-radius: 0.5rem;\n    position: relative;\n}\n.slideTips .sildeArea span[data-v-5202ed5e] {\n      display: block;\n      background: #00f000;\n      height: 1.1rem;\n      border-radius: 50%;\n      border: 1px solid #0000FF;\n      width: 1.1rem;\n      position: absolute;\n      left: 0;\n      top: 0;\n}\n.slideTips i[data-v-5202ed5e] {\n    font-size: 1.2rem;\n}\n.inputUserName[data-v-5202ed5e] {\n  position: relative;\n  padding-top: 2rem;\n}\n.inputUserName input[data-v-5202ed5e] {\n    display: block;\n    width: 70%;\n    margin: 0 auto;\n    height: 4rem;\n    border-radius: 1rem;\n    border: 1px solid #ccc;\n    outline: none;\n    box-shadow: 0 0 0.5rem #7E57C2;\n}\n.inputUserName span[data-v-5202ed5e] {\n    display: block;\n    width: 10rem;\n    height: 4rem;\n    border-radius: 1rem;\n    text-align: center;\n    line-height: 4rem;\n    font-size: 2rem;\n    border: 1px solid #ccc;\n    background-color: #7E57C2;\n    color: #fff;\n    margin: 0 auto;\n    margin-top: 1rem;\n}\n.inputUserName i[data-v-5202ed5e] {\n    position: absolute;\n    left: 50%;\n    top: 0;\n    color: red;\n}\n.tips[data-v-5202ed5e] {\n  margin-top: 1rem;\n}\n.headers[data-v-5202ed5e] {\n  position: fixed;\n}\n.nameVal[data-v-5202ed5e] {\n  height: 90%;\n  position: absolute;\n  top: 50%;\n  left: -100%;\n  margin-top: -24px;\n}\n.userInfor[data-v-5202ed5e] {\n  width: 100%;\n  text-align: center;\n  height: 16rem;\n  padding-top: 4rem;\n}\n.userInfor img[data-v-5202ed5e] {\n    width: 4rem;\n    height: 4rem;\n    margin: 0 auto;\n    display: block;\n    border-radius: 50%;\n}\n.list[data-v-5202ed5e] {\n  padding-left: 1rem;\n}\n.list .lists[data-v-5202ed5e] {\n    border: 1px solid #ccc;\n    margin-top: 1rem;\n    background-color: yellow;\n}\n", ""]);
 
 // exports
 
@@ -30778,7 +30950,7 @@ exports = module.exports = __webpack_require__(0)(undefined);
 
 
 // module
-exports.push([module.i, "\n.askList[data-v-7384d93f] {\n  padding: 1rem;\n}\n.askList ul[data-v-7384d93f] {\n    margin-top: 56px;\n}\n.askList ul li[data-v-7384d93f] {\n      border: 1px solid #ccc;\n      border-radius: 1rem;\n      display: flex;\n      margin-top: 0.5rem;\n      box-shadow: 0 0.3rem 0 #ccc;\n      padding: 1rem 1rem 2rem;\n      max-height: 15rem;\n      overflow: hidden;\n      position: relative;\n}\n.askList ul li .topicUser[data-v-7384d93f] {\n        width: 20%;\n        text-align: center;\n}\n.askList ul li .topicUser img[data-v-7384d93f] {\n          width: 4rem;\n          height: 4rem;\n          border-radius: 50%;\n          border: 1px solid #f00;\n}\n.askList ul li .topicUser p[data-v-7384d93f] {\n          width: 100%;\n          word-wrap: break-word;\n}\n.askList ul li .topicUser span[data-v-7384d93f] {\n          display: block;\n          width: 3rem;\n          height: 1.6rem;\n          line-height: 1.6rem;\n          margin: 0 auto;\n          border-radius: 1rem;\n          background-color: #f00;\n          font-size: 0.12rem;\n          border: 1px solid #FF0000;\n}\n.askList ul li .topicUser i[data-v-7384d93f] {\n          display: block;\n          width: 5rem;\n          height: 1.6rem;\n          line-height: 1.6rem;\n          margin: 0 auto;\n          border-radius: 1rem;\n          background-color: yellow;\n          font-size: 0.12rem;\n          border: 1px solid #FF0000;\n          margin-top: 0.5rem;\n          color: #00f;\n}\n.askList ul li .topicContent[data-v-7384d93f] {\n        width: 70%;\n        margin-left: 0.5rem;\n}\n.askList ul li .topicContent p[data-v-7384d93f] {\n          height: 3rem;\n          line-height: 1.5rem;\n          word-wrap: break-word;\n          padding: 0 1rem;\n          overflow: hidden;\n          text-overflow: ellipsis;\n          margin-bottom: 1rem;\n}\n.askList ul li .topicContent .times_disc[data-v-7384d93f] {\n          position: absolute;\n          bottom: 0.5rem;\n          right: 1rem;\n          margin-top: 1rem;\n          line-height: 2rem;\n}\n.askList ul li .operate[data-v-7384d93f] {\n        position: absolute;\n        right: 0;\n        top: 0;\n}\n.askList .loadMore[data-v-7384d93f] {\n    margin-top: 1rem;\n    width: 100%;\n    height: 3rem;\n    border-radius: 1rem;\n    line-height: 3rem;\n    text-align: center;\n    border: 1px solid #ccc;\n}\n.askList .loadMore[data-v-7384d93f]:active {\n    background-color: #7e57c2;\n    color: #fff;\n}\n.askList .startLoad[data-v-7384d93f] {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    margin-left: -24px;\n    margin-top: -24px;\n}\n.askList .footLoad[data-v-7384d93f] {\n    position: fixed;\n    bottom: 0;\n    left: 50%;\n    margin-left: -24px;\n    margin-top: 40px;\n}\n.askList .removeLi[data-v-7384d93f] {\n    color: red;\n}\n", ""]);
+exports.push([module.i, "\n.askList[data-v-7384d93f] {\n  padding: 1rem;\n}\n.askList ul[data-v-7384d93f] {\n    margin-top: 56px;\n}\n.askList ul li[data-v-7384d93f] {\n      border: 1px solid #ccc;\n      border-radius: 1rem;\n      display: flex;\n      margin-top: 0.5rem;\n      box-shadow: 0 0.3rem 0 #ccc;\n      padding: 1rem 1rem 2rem;\n      max-height: 15rem;\n      overflow: hidden;\n      position: relative;\n}\n.askList ul li .topicUser[data-v-7384d93f] {\n        width: 20%;\n        text-align: center;\n}\n.askList ul li .topicUser img[data-v-7384d93f] {\n          display: block;\n          width: 4rem;\n          height: 4rem;\n          border-radius: 50%;\n          border: 1px solid #f00;\n}\n.askList ul li .topicUser p[data-v-7384d93f] {\n          width: 100%;\n          word-wrap: break-word;\n}\n.askList ul li .topicUser span[data-v-7384d93f] {\n          display: block;\n          width: 3rem;\n          height: 1.6rem;\n          line-height: 1.6rem;\n          margin: 0 auto;\n          border-radius: 1rem;\n          background-color: #f00;\n          font-size: 0.12rem;\n          border: 1px solid #FF0000;\n}\n.askList ul li .topicUser i[data-v-7384d93f] {\n          display: block;\n          width: 5rem;\n          height: 1.6rem;\n          line-height: 1.6rem;\n          margin: 0 auto;\n          border-radius: 1rem;\n          background-color: yellow;\n          font-size: 0.12rem;\n          border: 1px solid #FF0000;\n          margin-top: 0.5rem;\n          color: #00f;\n}\n.askList ul li .topicContent[data-v-7384d93f] {\n        width: 70%;\n        margin-left: 0.5rem;\n}\n.askList ul li .topicContent p[data-v-7384d93f] {\n          height: 3rem;\n          line-height: 1.5rem;\n          word-wrap: break-word;\n          padding: 0 1rem;\n          overflow: hidden;\n          text-overflow: ellipsis;\n          margin-bottom: 1rem;\n}\n.askList ul li .topicContent .times_disc[data-v-7384d93f] {\n          position: absolute;\n          bottom: 0.5rem;\n          right: 1rem;\n          margin-top: 1rem;\n          line-height: 2rem;\n}\n.askList ul li .operate[data-v-7384d93f] {\n        position: absolute;\n        right: 0;\n        top: 0;\n}\n.askList .loadMore[data-v-7384d93f] {\n    margin-top: 1rem;\n    width: 100%;\n    height: 3rem;\n    border-radius: 1rem;\n    line-height: 3rem;\n    text-align: center;\n    border: 1px solid #ccc;\n}\n.askList .loadMore[data-v-7384d93f]:active {\n    background-color: #7e57c2;\n    color: #fff;\n}\n.askList .startLoad[data-v-7384d93f] {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    margin-left: -24px;\n    margin-top: -24px;\n}\n.askList .footLoad[data-v-7384d93f] {\n    position: fixed;\n    bottom: 0;\n    left: 50%;\n    margin-left: -24px;\n    margin-top: 40px;\n}\n.askList .removeLi[data-v-7384d93f] {\n    color: red;\n}\n", ""]);
 
 // exports
 
@@ -30820,6 +30992,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('li', [_c('div', {
       staticClass: "topicUser"
     }, [_c('img', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (!_vm.isHasImg),
+        expression: "!isHasImg"
+      }],
       attrs: {
         "src": a.author.avatar_url,
         "alt": ""
@@ -31074,6 +31252,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('li', [_c('div', {
       staticClass: "discUser"
     }, [_c('img', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (!_vm.isHasImg),
+        expression: "!isHasImg"
+      }],
       attrs: {
         "src": i.author.avatar_url,
         "alt": ""
@@ -31152,6 +31336,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('li', [_c('div', {
       staticClass: "topicUser"
     }, [_c('img', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (!_vm.isHasImg),
+        expression: "!isHasImg"
+      }],
       attrs: {
         "src": a.author.avatar_url,
         "alt": ""
@@ -31266,6 +31456,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('li', [_c('div', {
       staticClass: "topicUser"
     }, [_c('img', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (!_vm.isHasImg),
+        expression: "!isHasImg"
+      }],
       attrs: {
         "src": a.author.avatar_url,
         "alt": ""
@@ -31624,7 +31820,16 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     on: {
       "click": _vm.openBottomSheet
     }
-  }), _vm._v(" "), _c('br'), _vm._v(" "), _c('mu-raised-button', {
+  }), _vm._v(" "), _c('br'), _vm._v(" "), _c('div', {
+    staticClass: "slideTips"
+  }, [_c('div', {
+    staticClass: "sildeArea",
+    on: {
+      "click": function($event) {
+        _vm.slide()
+      }
+    }
+  }, [_c('span')]), _vm._v(" "), _c('i', [_vm._v("省流量模式")])]), _vm._v(" "), _c('mu-raised-button', {
     staticClass: "tips",
     attrs: {
       "label": "cNode 社区",
@@ -31707,25 +31912,45 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("登录")])])], 1)], 1), _vm._v(" "), _c('div', {
     staticClass: "setTopic"
-  }, [_c('mu-auto-complete', {
-    staticClass: "Topicinput",
+  }, [_c('input', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.topicTitleVal),
+      expression: "topicTitleVal"
+    }],
     attrs: {
-      "hintText": "请输入标题",
-      "dataSource": _vm.dataSource
+      "type": "text",
+      "placeholder": "请输入标题"
+    },
+    domProps: {
+      "value": (_vm.topicTitleVal)
     },
     on: {
-      "input": _vm.handleInput,
-      "change": _vm.handlechange
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.topicTitleVal = $event.target.value
+      }
     }
-  }), _vm._v(" "), _c('mu-auto-complete', {
-    staticClass: "Topicinput",
+  }), _vm._v(" "), _c('textarea', {
+    directives: [{
+      name: "model",
+      rawName: "v-model",
+      value: (_vm.topicContentVal),
+      expression: "topicContentVal"
+    }],
     attrs: {
-      "hintText": "请输入内容",
-      "fullWidth": "",
-      "dataSource": _vm.dataSource
+      "name": "topicContent",
+      "placeholder": "请输入主题内容"
+    },
+    domProps: {
+      "value": (_vm.topicContentVal)
     },
     on: {
-      "input": _vm.handleInput
+      "input": function($event) {
+        if ($event.target.composing) { return; }
+        _vm.topicContentVal = $event.target.value
+      }
     }
   }), _vm._v(" "), _c('select', {
     directives: [{
@@ -31769,7 +31994,27 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "value": "招聘"
     }
-  }, [_vm._v("招聘")])]), _vm._v(" "), _c('span', [_vm._v("发表主题")]), _vm._v(" "), _c('span', [_vm._v("取消")])], 1), _vm._v(" "), _c('router-view')], 1)
+  }, [_vm._v("招聘")])]), _vm._v(" "), _c('span', {
+    directives: [{
+      name: "shanshuo",
+      rawName: "v-shanshuo"
+    }],
+    on: {
+      "click": function($event) {
+        _vm.sendTopic()
+      }
+    }
+  }, [_vm._v("发表主题")]), _vm._v(" "), _c('span', {
+    directives: [{
+      name: "shanshuo",
+      rawName: "v-shanshuo"
+    }],
+    on: {
+      "click": function($event) {
+        _vm.notSendTopic()
+      }
+    }
+  }, [_vm._v("取消")])]), _vm._v(" "), _c('router-view')], 1)
 },staticRenderFns: []}
 module.exports.render._withStripped = true
 if (false) {
@@ -31790,6 +32035,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('li', [_c('div', {
       staticClass: "topicUser"
     }, [_c('img', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (!_vm.isHasImg),
+        expression: "!isHasImg"
+      }],
       attrs: {
         "src": a.author.avatar_url,
         "alt": ""
@@ -31904,6 +32155,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     return _c('li', [_c('div', {
       staticClass: "topicUser"
     }, [_c('img', {
+      directives: [{
+        name: "show",
+        rawName: "v-show",
+        value: (!_vm.isHasImg),
+        expression: "!isHasImg"
+      }],
       attrs: {
         "src": a.author.avatar_url,
         "alt": ""

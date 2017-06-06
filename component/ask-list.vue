@@ -3,7 +3,7 @@
 		<ul>
 			<li v-for="(a,idx) in Alltopic">
 				<div class="topicUser">
-					<img :src="a.author.avatar_url" alt="" />
+					<img :src="a.author.avatar_url" alt="" v-show="!isHasImg"/>
 					<p>{{a.author.loginname}}</p>
 					<span>问答</span>
 					<i v-show="isCollect">已收藏</i>
@@ -40,7 +40,13 @@
 				isstartLoad:true,
 				isfootLoad:false,
 				page:1,
-				isCollect:false
+				isCollect:false,
+				
+			}
+		},
+		computed:{
+			isHasImg(){
+				return this.$store.state.IsNoImg;
 			}
 		},
 		methods:{
@@ -137,6 +143,7 @@
 					width: 20%;
 					text-align:center;
 					img{
+						display: block;
 						width: 4rem;
 						height: 4rem;
 						border-radius: 50%;

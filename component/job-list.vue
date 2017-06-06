@@ -3,7 +3,7 @@
 		<ul>
 			<li v-for="(a,idx) in Alltopic">
 				<div class="topicUser">
-					<img :src="a.author.avatar_url" alt="" />
+					<img :src="a.author.avatar_url" alt="" v-show="!isHasImg" />
 					<p>{{a.author.loginname}}</p>
 					<span>招聘</span>
 				</div>
@@ -39,6 +39,11 @@
 				isstartLoad:true,
 				isfootLoad:false,
 				page:1
+			}
+		},
+		computed:{
+			isHasImg(){
+				return this.$store.state.IsNoImg;
 			}
 		},
 		methods:{

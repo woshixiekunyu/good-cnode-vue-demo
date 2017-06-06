@@ -31,7 +31,7 @@
 			<ul>
 				<li v-for="(i,idx) in discInfor">
 					<div class="discUser">
-						<img :src="i.author.avatar_url" alt=""/>
+						<img :src="i.author.avatar_url" alt="" v-show="!isHasImg"/>
 						<span>{{i.author.loginname}}</span>
 						<i>{{idx+1}}楼</i>
 					</div>
@@ -86,6 +86,9 @@
 			},
 			discId(){
 				return this.$store.state.discId;
+			},
+			isHasImg(){
+				return this.$store.state.IsNoImg;
 			}
 		},
 		methods: {
@@ -370,7 +373,17 @@
 					}
 				});
 			}else{
-				alert('请先登录')
+				$.ajax({
+					url: 'https://cnodejs.org/api/v1/accesstoken',
+					type: 'POST',
+					data: {
+						accesstoken: self.cookie
+					},
+					success: function success(data) {
+//						console.log(data);
+						self.userName = data.loginname;
+					}
+				});
 			}
 			
 			
