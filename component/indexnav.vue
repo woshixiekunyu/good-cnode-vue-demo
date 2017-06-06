@@ -26,8 +26,8 @@
 					<span>{{userName}}</span>
 				</div>
 				<div class="list">
-					<mu-list-item title="Menu Item 1" class="lists"/>
-					<mu-list-item title="Menu Item 2" class="lists"/>
+					<mu-list-item title="我的收藏" class="lists" @click="toCollect()"/>
+					<mu-list-item title="新建主题" class="lists" @click="toBuildTopic()"/>
 					<mu-list-item title="Menu Item 3" class="lists"/>
 				</div>
 				<!--<mu-list-item v-if="docked" @click.native="open = false" title="Close" />-->
@@ -44,7 +44,19 @@
 		    	</div>
 		    </mu-list>
 		</mu-bottom-sheet>
-		<div class="setTopic"></div>
+		<div class="setTopic">
+			<mu-auto-complete class="Topicinput" hintText="请输入标题" @input="handleInput" :dataSource="dataSource" @change="handlechange" />
+  			<mu-auto-complete class="Topicinput" hintText="请输入内容" fullWidth @input="handleInput" :dataSource="dataSource"/>
+  			<select name="topicType" id="topicType" v-model="topicType">
+  				<option value="全部">全部</option>
+  				<option value="问答">问答</option>
+  				<option value="分享">分享</option>
+  				<option value="精华">精华</option>
+  				<option value="招聘">招聘</option>
+  			</select>
+  			<span>发表主题</span>
+  			<span>取消</span>
+		</div>
 		<router-view></router-view>
 	</div>
 </template>
@@ -63,11 +75,34 @@
   				userVal:'',
   				userSrc:'',
   				loginTips:false,
-  				cookie:''
-
+  				cookie:'',
+				isBuildTopic:false,
+				dataSource: [],
+				topicType:'全部'
 			}
 		},
 		methods: {
+			//打开收藏页
+			toCollect(){
+				window.location.href="#/collect/";
+				
+			},
+			//新建主题页
+			handlechange (val) {
+		    	console.log(`you choose ${val}`)
+		    },
+			handleInput(val) {
+				this.dataSource = [
+					val,
+					val + val,
+					val + val + val
+				]
+			},
+			//新建主题
+			toBuildTopic(){
+				this.isBuildTopic = true;
+				$('.setTopic').animate({"top":0},1000)
+			},
 			//登录
 			toLogin(){
 				var self = this;
@@ -176,14 +211,15 @@
 			}
 			
 			//页面一开始判断是否有cookie
-			var cookie = document.cookie.split(' ;');
+			var cookie = document.cookie.split('; ');
+			
 			cookie.forEach(function(item){
 				var arr = item.split('=');
-				if(arr[0] = 'isUser'){
+				if(arr[0] == 'isUser'){
 					self.cookie = arr[1] 
 				}
 			})	
-//			console.log(self.cookie)
+			console.log(self.cookie)
 			if(self.cookie){
 				$.ajax({
 					url:'https://cnodejs.org/api/v1/accesstoken',
@@ -195,6 +231,7 @@
 						console.log(data)
 						self.userSrc = data.avatar_url;
 						self.userName = data.loginname;
+//						self.userId = data.id;
 						self.isLogin = '退出登录'
 					}
 				})
@@ -203,6 +240,42 @@
 	}
 </script>
 <style scoped lang="scss">
+	.setTopic{
+		z-index: 100000;
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		top: -100%;
+		left: 0;
+		background-color: rgba(0,0,0,0.7);
+
+		padding: 10rem 1rem 0;
+		.Topicinput{
+			width:100%;
+			border-radius: 1rem;
+			border: 3px solid #7E57C2;
+			background-color: #fff;
+			margin-top: 1rem;
+		}
+		#topicType{
+			margin-top: 1rem;
+			width: 100%;
+			height: 3rem;
+			
+		}
+		&>span{
+			display: block;
+			width: 100%;
+			height: 4rem;
+			border: 2px solid #7E57C2;
+			background-color: skyblue;
+			border-radius: 1rem;
+			line-height: 4rem;
+			text-align: center;
+			font-size: 1.6rem;
+			margin-top: 0.5rem;
+		}
+	}
 	.inputUserName{
 		position: relative;
 		padding-top: 2rem;

@@ -6,6 +6,7 @@
 					<img :src="a.author.avatar_url" alt="" />
 					<p>{{a.author.loginname}}</p>
 					<span>问答</span>
+					<i v-show="isCollect">已收藏</i>
 				</div>
 				<div class="topicContent" @click="toDetail(a.id)">
 					<h4>{{a.title}}</h4>
@@ -39,6 +40,7 @@
 				isstartLoad:true,
 				isfootLoad:false,
 				page:1,
+				isCollect:false
 			}
 		},
 		methods:{
@@ -136,6 +138,7 @@
 					text-align:center;
 					img{
 						width: 4rem;
+						height: 4rem;
 						border-radius: 50%;
 						border: 1px solid #f00;
 					}
@@ -153,6 +156,19 @@
 						background-color: #f00;
 						font-size: 0.12rem;
 						border: 1px solid #FF0000;
+					}
+					i{
+						display: block;
+						width: 5rem;
+						height: 1.6rem;
+						line-height: 1.6rem;
+						margin: 0 auto;
+						border-radius: 1rem;
+						background-color: yellow;
+						font-size: 0.12rem;
+						border: 1px solid #FF0000;
+						margin-top:0.5rem;
+						color:#00f;
 					}
 				}
 				.topicContent{

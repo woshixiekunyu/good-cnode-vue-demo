@@ -31,6 +31,7 @@ var askList = require('./component/ask-list.vue');
 var goodList = require('./component/good-list.vue');
 var shareList = require('./component/share-list.vue');
 var jobList = require('./component/job-list.vue');
+var collect = require('./component/collect.vue');
 var detail = require('./component/detail.vue');
 
 var router = new VueRouter({
@@ -57,12 +58,31 @@ var router = new VueRouter({
 		path:'/detail/:id',
 		component:detail
 	},{
+		path:'/collect',
+		component:collect
+	},{
 		path:'/',
 		redirect:'/index/mainList'
 	}]
 })
 var store = new Vuex.Store({
-	
+	state:{
+		discId:'',
+		zanLength:''
+	},
+	mutations:{
+		getDiscId(state,a){
+			state.discId = a;
+		},
+		getZanLength(state,a){
+			state.zanLength = a
+		}
+	},
+	getters:{
+		discId(state){
+			return state.getDiscId;
+		}
+	}
 })
 
 //创建Vue

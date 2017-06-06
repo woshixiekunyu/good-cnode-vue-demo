@@ -17,28 +17,31 @@
 				<mu-avatar :src="authorimg" slot="avatar" v-abc/>
 			</mu-card-header>
 
-			<mu-card-title :title="articleTitle" subTitle="Content Title" class="underLine" />
-			<mu-card-text v-html="articleCon">
-
-			</mu-card-text>
+			<mu-card-title :title="articleTitle" class="underLine" />
+			
+			<mu-card-text v-html="articleCon"></mu-card-text>
+			<mu-flat-button class="collect" label="collect" @click="collect(topicId)"/>
 			<mu-card-actions style="border-top: 1px solid #ccc;">
 				<mu-flat-button :label="'visit：'+visit" />
 				<mu-flat-button :label="'评论共'+pinlun+'条'" />
+				
 			</mu-card-actions>
 		</mu-card>
 		<div class="sidcArea">
 			<ul>
 				<li v-for="(i,idx) in discInfor">
 					<div class="discUser">
-						<img :src="i.author.avatar_url" alt="" />
+						<img :src="i.author.avatar_url" alt=""/>
 						<span>{{i.author.loginname}}</span>
 						<i>{{idx+1}}楼</i>
 					</div>
 					<div class="discContent">
 						<div v-html="i.content"></div>
 						<div class="zanOrdis">
-							<i class="icon icon-zan"></i>
-							<i class="icon icon-disc"></i>
+							<div class="zan">
+								<i class="icon icon-zan" @click="discZan(i.id,i.ups.length)"></i><span>{{i.ups.length}}</span>
+							</div>
+							<i class="icon icon-disc" @click="toDisor(i.id,i.author.loginname)"></i>
 						</div>
 					</div>
 				</li>
@@ -46,7 +49,7 @@
 		</div>
 		
 		<div class="backInput">
-			<input type="text" v-model="backInputVal"/>
+			<input type="text" v-model="backInputVal" placeholder="请输入评论内容"/>
 			<span @click="sendBackInput()">评论</span>
 		</div>
 		
@@ -71,10 +74,110 @@
 				discName: '',
 				discSrc: '',
 				discInfor: '',
-				backInputVal:''
+				backInputVal:'',
+				istoDisor:false,
+				topicId:'',
+				topicCollect:false
+			}
+		},
+		computed:{
+			zanNum(){
+				return 0
+			},
+			discId(){
+				return this.$store.state.discId;
 			}
 		},
 		methods: {
+			collect(topicId){
+				var self = this;
+				var key;
+				var collect;
+				var cookie = document.cookie.split('; ')
+				cookie.forEach(function(item){
+					var arr = item.split('=');
+					if(arr[0] == 'isUser'){
+						key = arr[1]
+					}else if(arr[0] == 'collect'){
+						collect = arr[1]
+					}
+				})
+				if(key){
+					if(collect == 'true'){
+						$.ajax({
+							url:'https://cnodejs.org/api/v1/topic_collect/de_collect',
+							type:'POST',
+							data:{
+								accesstoken : key,
+								topic_id : topicId
+							},
+							success(data){
+								console.log(data,'取消')
+								self.topicCollect = false;
+								console.log(self.topicCollect)
+								$('.collect').css('backgroundColor','')
+								var now = new Date();
+								now.setDate(now.getDate()-370)
+								document.cookie = 'collect='+self.topicCollect+';expires='+now;
+							}
+						})
+						
+					}else{
+						$.ajax({
+							url:'https://cnodejs.org/api/v1/topic_collect/collect',
+							type:'POST',
+							data:{
+								accesstoken : key,
+								topic_id : topicId
+							},
+							success(data){
+								console.log(data,'收藏')
+								self.topicCollect = true;
+								console.log(self.topicCollect)
+								$('.collect').css('backgroundColor','yellow')
+								var now = new Date();
+								now.setDate(now.getDate()+365)
+								document.cookie = 'collect='+self.topicCollect+';expires='+now;
+								console.log(key)
+							}
+						})
+					}
+				}else{
+					alert('请登录')
+				}
+				
+			},
+			discZan(id,zanLength){
+				var self = this;
+				var key;
+				console.log(id)
+				var cookie = document.cookie.split('; ')
+				cookie.forEach(function(item){
+					var arr = item.split('=');
+					if(arr[0] == 'isUser'){
+						key = arr[1]
+					}
+				})
+				$.ajax({
+					url:"https://cnodejs.org/api/v1/reply/"+id+"/ups",
+					type:'POST',
+					data:{
+						accesstoken : key
+					},
+					success(data){
+						console.log(data)
+						self.zanNum = zanLength+1
+					}
+				})
+				
+			},
+			toDisor(id,loginname){
+				console.log(id)
+				this.istoDisor = true;
+				$('.backInput input').val('@'+loginname+' ');
+				this.$store.commit('getDiscId',id)
+				$('.backInput input').focus()
+			},
 			handleTabChange(val) {
 				this.activeTab = val
 				this.name = val
@@ -120,11 +223,11 @@
 			},
 			sendBackInput(){
 				var self = this;
-				var params = this._self.$route.params.id;
-				
+				var params = this.$route.params.id;
+//				console.log(self.discId)
 				//获取accesstoken
 				var key;
-				var cookie = document.cookie.split(' ;')
+				var cookie = document.cookie.split('; ')
 				cookie.forEach(function(item){
 					var arr = item.split('=');
 					if(arr[0] == 'isUser'){
@@ -132,19 +235,38 @@
 					}
 				})
 				if(key){
-					$.ajax({
-						url:'https://cnodejs.org/api/v1/topic/'+params+'/replies',
-						type:'POST',
-						data:{
-							accesstoken : key,
-							content : self.backInputVal
-						},
-						success(data){
-							
-							self.backInputVal = '';
-							location.reload();
-						}
-					})
+					if(self.istoDisor){
+						console.log(self.discId)
+						$.ajax({
+							url:'https://cnodejs.org/api/v1/topic/'+params+'/replies',
+							type:'post',
+							data:{
+								accesstoken : key,
+								content : self.backInputVal,
+								reply_id : self.discId
+							},
+							success(data){
+								self.backInputVal = '';
+								self.istoDisor = false;
+								location.reload();
+							}
+						})
+					}else{
+						$.ajax({
+							url:'https://cnodejs.org/api/v1/topic/'+params+'/replies',
+							type:'POST',
+							data:{
+								accesstoken : key,
+								content : self.backInputVal
+							},
+							success(data){
+								
+								self.backInputVal = '';
+								location.reload();
+							}
+						})
+					}
+					
 				}else{
 					alert('请登陆后在回复')
 				}
@@ -168,7 +290,8 @@
 					self.topic = data.data.tab;
 					self.visit = data.data.visit_count;
 					self.pinlun = data.data.reply_count;
-					self.discInfor = data.data.replies
+					self.discInfor = data.data.replies;
+					self.topicId = data.data.id
 				}
 			})
 			if(this.topic == 'ask') {
@@ -200,6 +323,57 @@
 				window.location.href = "#/index/jobList"
 				this.activeTab = '招聘';
 			}
+			
+			var cookie = document.cookie.split('; ');
+
+			cookie.forEach(function (item) {
+				var arr = item.split('=');
+				if (arr[0] == 'isUser') {
+					self.cookie = arr[1];
+				}
+			});
+//			console.log(self.cookie);
+			if (self.cookie) {
+				$.ajax({
+					url: 'https://cnodejs.org/api/v1/accesstoken',
+					type: 'POST',
+					data: {
+						accesstoken: self.cookie
+					},
+					success: function success(data) {
+						console.log(data,1);
+						self.userName = data.loginname;
+						$.ajax({
+							url:'https://cnodejs.org/api/v1/topic_collect/'+data.loginname,
+							type:'get',
+							success(dataId){
+								console.log(dataId,2)
+								console.log(self)
+								for(var i=0;i<dataId.data.length;i++){
+									if(dataId.data[i].id == self.$route.params.id){
+
+										$('.collect').css('backgroundColor','yellow')
+										var now = new Date();
+										now.setDate(now.getDate()+365)
+										document.cookie = 'collect='+self.topicCollect+';expires='+now;
+										break;
+									}else if(dataId.data[i].id != self.$route.params.id){
+										
+										var now = new Date();
+										now.setDate(now.getDate()-370)
+										document.cookie = 'collect='+self.topicCollect+';expires='+now;
+										$('.collect').css('backgroundColor','')
+									}
+								}
+							}
+						})
+					}
+				});
+			}else{
+				alert('请先登录')
+			}
+			
+			
 		},
 		directives:{
 			abc:{

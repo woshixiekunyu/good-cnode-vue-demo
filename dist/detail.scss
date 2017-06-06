@@ -12,12 +12,17 @@
     pre{
         background-color: #ccc;
     }
+    table{
+        border-bottom: 1px solid #ccc;
+        word-break: break-word;
+    }
     .mu-flat-button{
+        width: 40%;
         border: 1px solid #ccc;
-        margin-left: 2rem;
     }
     .headers{
         position: fixed;
+        
     }
     .nameVal{
         height: 90%;
@@ -86,16 +91,25 @@
                         width: 100%;
                         .icon{
                             display: block;
-                            margin-right: 2rem;
+                            
                             margin-bottom: 0.3rem;
                         }
-                        .icon-zan{
-                            width: 20px;
-                            height: 20px;
-                            background: url(../publicGood/image/icon-zan.png) no-repeat;
+                        .zan{
+                            margin-right: 2rem;
                             float: right;
+                           .icon-zan{
+                                width: 20px;
+                                height: 20px;
+                                background: url(../publicGood/image/icon-zan.png) no-repeat;
+                                float: left;
+                            }
+                            span{
+                                float: right;
+                            }
                         }
+                        
                         .icon-disc{
+                            margin-right: 2rem;
                             width: 20px;
                             height: 20px;
                             background: url(../publicGood/image/icon-disc.png) no-repeat;
